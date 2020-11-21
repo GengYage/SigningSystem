@@ -13,6 +13,7 @@
         <activity android:name=".Register"/>
         <activity android:name=".Home"/>
         <activity android:name=".ResetPassword"/>
+        <activity android:name=".home.Main"/>
         <activity android:name=".Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

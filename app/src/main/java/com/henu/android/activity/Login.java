@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.henu.android.activity.home.Main;
 import com.henu.android.entity.User;
 import com.henu.android.utils.MysqlUtils;
 
@@ -83,7 +84,13 @@ public class Login extends Activity implements View.OnClickListener {
         System.out.println(telNumber+" "+user);
         if(user != null){
             if(password.equals(user.getPassword())){
-                Intent intent = new Intent(Login.this,Home.class);
+                Intent intent = new Intent(Login.this, Main.class);
+                Bundle bundle = new Bundle();
+                bundle.putCharSequence("username",user.getUsername());
+                bundle.putCharSequence("id",String.valueOf(user.getId()));
+                bundle.putCharSequence("telNumber",user.getTelNumber());
+                bundle.putCharSequence("userType",Integer.toString(user.getUserType()));
+                intent.putExtras(bundle);
                 startActivity(intent);
             }
             else{

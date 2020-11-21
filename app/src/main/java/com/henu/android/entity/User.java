@@ -5,6 +5,8 @@ public class User {
     private String telNumber;
     private  String username;
     private  String password;
+    private int userType;
+
 
     public User() {
         super();
@@ -14,16 +16,6 @@ public class User {
         this.telNumber = telNumber;
         this.username = username;
         this.password = password;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", telNumber='" + telNumber + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
     }
 
     public int getId() {
@@ -56,5 +48,24 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", telNumber='" + telNumber + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", userType=" + userType +
+                '}';
     }
 }
