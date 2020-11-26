@@ -5,6 +5,12 @@ public class Group {
     private String gname;
     private String gowner;
 
+    public Group(int gid, String gname, String gowner) {
+        this.gid = gid;
+        this.gname = gname;
+        this.gowner = gowner;
+    }
+    public Group() {}
     public int getGid() {
         return gid;
     }

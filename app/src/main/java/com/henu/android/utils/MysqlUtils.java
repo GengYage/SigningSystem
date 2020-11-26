@@ -17,7 +17,7 @@ public class MysqlUtils {
     private static String username = "android";
     private static String password = "gyg06103234";
 
-    private static Connection getConnection() throws ClassNotFoundException, SQLException {
+    public static Connection getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
         Connection connection = DriverManager.getConnection(url,username,password);
         return connection;
@@ -52,7 +52,6 @@ public class MysqlUtils {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1,telNumber);
         ResultSet resultSet = preparedStatement.executeQuery();
-
 
         //如果帐号存在，则返回，否则返回一个空指针
         User user = null;
@@ -111,7 +110,7 @@ public class MysqlUtils {
     //列出存在的所有群
     public static ArrayList<Group> showGroups() throws SQLException, ClassNotFoundException {
         Connection conn = getConnection();
-        String sql = "select * form group";
+        String sql = "select * form sgroup";
         PreparedStatement ptmt = conn.prepareStatement(sql);
         ResultSet resultSet = ptmt.executeQuery();
 
@@ -129,7 +128,7 @@ public class MysqlUtils {
     //通过gid查找群
     public static Group findGroupByGid(int gid) throws SQLException, ClassNotFoundException {
         Connection conn = getConnection();
-        String sql = "select * from `group` where gid = ?";
+        String sql = "select * from sgroup where gid = ?";
         PreparedStatement ptmt = conn.prepareStatement(sql);
         ptmt.setInt(1,gid);
 

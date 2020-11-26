@@ -1,64 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#c2c2c2"
     android:orientation="vertical"
-    android:padding="16dp" >
-    <Spinner
-        android:id="@+id/group"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/app_lvjian_rbtn_normal_background"
-        >
-
-    </Spinner>
+    android:layout_marginBottom="58dp"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@drawable/app_lvjian_rbtn_normal_background"
+        android:background="#FFF"
         android:orientation="vertical"
         android:padding="8dp" >
 
         <ListView
-            android:id="@+id/lv_chat_dialog"
+            android:id="@+id/msgs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:divider="#0000"
             android:dividerHeight="8dp"
-            android:scrollbars="none" >
-        </ListView>
+            android:scrollbars="none"
+            />
     </LinearLayout>
-   
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:orientation="horizontal" >
 
         <EditText
-            android:id="@+id/et_chat_message"
+            android:id="@+id/msg_edit"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textSize="14sp"
-            android:background="@drawable/app_lvjian_rbtn_normal_background"
+            android:background="#FFF"
             android:gravity="center|left"
-            android:padding="8dp" />
+            android:padding="8dp"
+            tools:ignore="RtlHardcoded"
+            />
 
         <Button
-            android:id="@+id/btn_chat_message_send"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="64dp"
-            android:layout_marginLeft="8dp"
+            android:id="@+id/msg_send_btn"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center|right"
+            android:layout_marginLeft="8dp"
             android:layout_marginRight="4dp"
-            android:background="@drawable/app_lvjian_chat_sends" />
+            android:background="#BDD6EF"
+            android:text="发送"
+            tools:ignore="RtlHardcoded" />
     </LinearLayout>
 
 </LinearLayout>

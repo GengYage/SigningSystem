@@ -5,7 +5,6 @@ public class User {
     private String telNumber;
     private  String username;
     private  String password;
-    private int userType;
 
 
     public User() {
@@ -50,14 +49,6 @@ public class User {
         this.password = password;
     }
 
-    public int getUserType() {
-        return userType;
-    }
-
-    public void setUserType(int userType) {
-        this.userType = userType;
-    }
-
     @Override
     public String toString() {
         return "User{" +
@@ -65,7 +56,6 @@ public class User {
                 ", telNumber='" + telNumber + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", userType=" + userType +
                 '}';
     }
 }

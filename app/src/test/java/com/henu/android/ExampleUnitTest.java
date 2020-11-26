@@ -1,11 +1,14 @@
 package com.henu.android;
 
+import com.henu.android.entity.Group;
 import com.henu.android.entity.User;
+import com.henu.android.utils.GroupUtils;
 import com.henu.android.utils.MysqlUtils;
 
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -17,9 +20,13 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() throws SQLException, ClassNotFoundException {
-
-
-        User user = MysqlUtils.findUserByAccount("1");
-        System.out.println(user);
+        try {
+            String[] groupName = GroupUtils.getGroupName(1);
+            System.out.println(Arrays.toString(groupName));
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
