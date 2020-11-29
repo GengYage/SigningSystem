@@ -24,6 +24,8 @@ public class GroupUtils {
             group.setGowner(resultSet.getString(3));
             groups.add(group);
         }
+        resultSet.close();
+        connection.close();
         return groups;
     }
     //返回所有未加入的群
@@ -48,7 +50,7 @@ public class GroupUtils {
             return new String[0];
         }
 
-        String[] str = new String[allGroupName.size()-readyGroupName.size()];
+        String[] str = new String[allGroupName.size()-readyGroupName.size()+1];
         for (String gName :
                 allGroupName) {
             if(!readyGroupName.contains(gName)){
@@ -56,6 +58,7 @@ public class GroupUtils {
                 index++;
             }
         }
+
         return str;
     }
 
@@ -80,6 +83,18 @@ public class GroupUtils {
         return groupNames;
     }
 
+    public static ArrayList<Group> getGroups(int id) {
+        ArrayList<Group> groups = null;
+        try {
+            groups = MysqlUtils.findGroupsByUserId(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return groups;
+    }
+
     //通过群id获取群信息
     public static Group getGroupInfoByGid(int gid) throws SQLException, ClassNotFoundException {
         Group group = new Group();
@@ -93,6 +108,8 @@ public class GroupUtils {
             group.setGname(resultSet.getString(2));
             group.setGowner(resultSet.getString(3));
         }
+        resultSet.close();
+        connection.close();
         return group;
     }
 
@@ -106,11 +123,11 @@ public class GroupUtils {
         PreparedStatement ptmp = connection.prepareStatement(sql);
         ptmp.setString(1,gname);
         ptmp.setString(2,username);
-        System.out.println(username);
         int tmp = 0;
-        if(ptmp.execute()) {
-            tmp = 1;
+        if(ptmp.execute()) { //失败
+            tmp = -1;
         }
+        connection.close();
         return tmp;
     }
     //查找群id
@@ -124,6 +141,9 @@ public class GroupUtils {
         while (resultSet.next()) {
             tmp = resultSet.getInt(1);
         }
+
+        resultSet.close();
+        connection.close();
         return tmp;
     }
 
@@ -136,7 +156,18 @@ public class GroupUtils {
         ptmt.setInt(1,gid);
         ptmt.setInt(2,uid);
         boolean execute = ptmt.execute();
-        System.out.println(execute);
+        connection.close();
+    }
+
+    //退出群聊
+    public static void delGroupMember(int gid,int uid) throws SQLException, ClassNotFoundException {
+        Connection connection = MysqlUtils.getConnection();
+        String sql = "delete from groupmember where groupid  = ? and memberid = ?";
+        PreparedStatement ptmt = connection.prepareStatement(sql);
+        ptmt.setInt(1,gid);
+        ptmt.setInt(2,uid);
+        ptmt.execute();
+        connection.close();
     }
 
 }

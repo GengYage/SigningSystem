@@ -14,21 +14,23 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.henu.android.activity.R;
+import com.henu.android.entity.News;
 
 import java.util.ArrayList;
 
 public class DGMessage extends Fragment {
+
     //定义接口用于和Activity通信
     public interface OnSendMsg {
         void sendMsg(String context);
         MessageAdapter getMessageAdapter();
-        ArrayList<Message> getMessage();
+        ArrayList<News> getMessage();
     }
 
     private OnSendMsg onSendMsg;
-    private ListView listView;
-    private ArrayList<Message> messages;
-    private MessageAdapter messageAdapter;
+    private static ListView listView;
+    private static ArrayList<News> myMessages;
+    private static MessageAdapter messageAdapter;
 
     @Override
     public void onAttach(Context context) {
@@ -48,38 +50,40 @@ public class DGMessage extends Fragment {
         Button msgSendBtn = view.findViewById(R.id.msg_send_btn);
         EditText edit =  view.findViewById(R.id.msg_edit);
         listView = view.findViewById(R.id.msgs);
-        messages = onSendMsg.getMessage();
+        myMessages = onSendMsg.getMessage();
         //刷新一次消息
         messageAdapter = onSendMsg.getMessageAdapter();
         listView.setAdapter(messageAdapter);
         messageAdapter.notifyDataSetChanged();
-        handler.sendEmptyMessage(1);
+        listView.setSelection(myMessages.size());
         //发送新的消息
         msgSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onSendMsg.sendMsg(edit.getText().toString());
-                edit.setText("");
+                messageAdapter = onSendMsg.getMessageAdapter();
+                listView.setAdapter(messageAdapter);
                 messageAdapter.notifyDataSetChanged();
-                handler.sendEmptyMessage(1);
+
+                edit.setText("");
+                listView.setSelection(myMessages.size());
             }
         });
         return view;
     }
 
-
-    //选中最后一条消息
-    private Handler handler = new Handler(Looper.getMainLooper()) {
+    public static Handler handler = new Handler(Looper.myLooper()){
+        @Override
         public void handleMessage(android.os.Message msg) {
             int what = msg.what;
             switch (what) {
-                case 1:
-                    listView.setSelection(messages.size());
+                case 3:
+                    messageAdapter.notifyDataSetChanged();
+                    listView.setSelection(myMessages.size());
                     break;
                 default:
                     break;
             }
         }
     };
-
 }

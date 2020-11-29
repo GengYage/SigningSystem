@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#c2c2c2"
+    android:background="@drawable/home"
     android:orientation="vertical"
     android:layout_marginBottom="58dp"
     >
@@ -13,9 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#FFF"
         android:orientation="vertical"
-        android:padding="8dp" >
+        android:padding="8dp"
+        >
 
         <ListView
             android:id="@+id/msgs"
@@ -56,7 +56,8 @@
             android:layout_marginRight="4dp"
             android:background="#BDD6EF"
             android:text="发送"
-            tools:ignore="RtlHardcoded" />
+            tools:ignore="RtlHardcoded"
+            />
     </LinearLayout>
 
 </LinearLayout>

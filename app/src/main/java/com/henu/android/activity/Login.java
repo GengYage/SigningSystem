@@ -22,8 +22,8 @@ public class Login extends Activity implements View.OnClickListener {
     private Button  btnLogin;
     private Button  btnRegister;
     private TextView tvResetPwd;
-    private EditText    edAccount;
-    private EditText    edPassword;
+    private EditText edAccount;
+    private EditText edPassword;
     private String telNumber;
     private String password;
 
@@ -82,7 +82,6 @@ public class Login extends Activity implements View.OnClickListener {
         password = edPassword.getText().toString();
         User user = null;
         user = MysqlUtils.findUserByTel(telNumber);
-        System.out.println(telNumber+" "+user);
         if(user != null){
             if(password.equals(user.getPassword())){
                 Intent intent = new Intent(Login.this, Home.class);

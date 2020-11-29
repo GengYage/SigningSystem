@@ -1,6 +1,7 @@
 package com.henu.android.utils;
 
-import com.henu.android.activity.home.Message;
+import com.henu.android.activity.home.MyMessage;
+import com.henu.android.entity.News;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,21 +10,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class MessageUtils {
-    public static ArrayList<Message>  getMessageByGroupId(int gid) throws SQLException, ClassNotFoundException {
+    public static ArrayList<News>  getMessageByGroupId(int gid) throws SQLException, ClassNotFoundException {
         Connection connection = MysqlUtils.getConnection();
         String sql = "select * from message where gid = ?";
         PreparedStatement ptmt = connection.prepareStatement(sql);
         ptmt.setInt(1,gid);
         ResultSet resultSet = ptmt.executeQuery();
-        ArrayList<Message> messages = new ArrayList<>();
+        ArrayList<News> myMessages = new ArrayList<>();
         while (resultSet.next()){
-            Message message = new Message();
-            message.setGroup(GroupUtils.getGroupInfoByGid(gid));
-            message.setUser(MysqlUtils.findUserById(resultSet.getInt(2)));
-            message.setContext(resultSet.getString(3));
-            message.setDate(resultSet.getDate(4));
-            messages.add(message);
+            News myMessage = new News();
+            myMessage.setGroupID(gid);
+            myMessage.setUserId(resultSet.getInt(2));
+            myMessage.setContent(resultSet.getString(3));
+            myMessage.setUsername(resultSet.getString(5));
+            myMessages.add(myMessage);
         }
-        return messages;
+        resultSet.close();
+        connection.close();
+        return myMessages;
     }
 }

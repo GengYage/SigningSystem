@@ -167,6 +167,8 @@ public class MysqlUtils {
             groups.add(groupByGid);
         }
 
+        resultSet.close();
+        conn.close();
         return groups;
     }
 

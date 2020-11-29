@@ -2,7 +2,7 @@
 <menu xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/message"
+    <item android:id="@+id/myMessage"
         android:icon="@drawable/message"
         android:title="消息"
         app:showAsAction="ifRoom"

@@ -5,7 +5,7 @@ import com.henu.android.entity.User;
 
 import java.util.Date;
 
-public class Message {
+public class MyMessage {
     private User user;
     private Group group;
     private String context;

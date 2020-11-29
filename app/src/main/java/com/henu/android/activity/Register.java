@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -132,7 +133,7 @@ public class Register extends Activity implements View.OnClickListener , OnSendM
                 startActivity(intent);
             }
         }else{
-            System.out.println("两次代码输入不一致");
+            Toast.makeText(this,"两次密码输入的不一致",Toast.LENGTH_SHORT).show();
         }
 
     }

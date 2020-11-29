@@ -2,23 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/msg_left_img"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="top"
-        android:src="@drawable/app_lvjian_message_background" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/msg_left_img"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="top"
+            android:src="@drawable/app_lvjian_message_background"
+            />
+
+        <TextView
+            android:id="@+id/msg_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="gyg" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/msg_left_context"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:padding="8dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginTop="-18dp"
         android:background="@drawable/app_lvjian_other_chat_background"
+        android:padding="8dp"
         />
+
 
 </LinearLayout>
