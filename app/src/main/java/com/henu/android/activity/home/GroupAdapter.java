@@ -11,7 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.henu.android.activity.R;
+import com.henu.android.R;
 import com.henu.android.entity.Group;
 import com.henu.android.utils.GroupUtils;
 

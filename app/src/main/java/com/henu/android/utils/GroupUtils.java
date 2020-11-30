@@ -30,9 +30,9 @@ public class GroupUtils {
     }
     //返回所有未加入的群
     public static String[] getGroupName(int id) throws SQLException, ClassNotFoundException {
-        ArrayList<Group> allGroup = findAllGroup();
-        ArrayList<String> allGroupName = new ArrayList<>();
-        ArrayList<String> readyGroupName = new ArrayList<>();
+        ArrayList<Group> allGroup = findAllGroup(); //所有的群聊
+        ArrayList<String> allGroupName = new ArrayList<>(); //所有群聊的名字
+        ArrayList<String> readyGroupName = new ArrayList<>();  //待加入的群聊名字
         int index = 0;
         for (Group group : allGroup) {
             allGroupName.add(group.getGname());
@@ -50,7 +50,7 @@ public class GroupUtils {
             return new String[0];
         }
 
-        String[] str = new String[allGroupName.size()-readyGroupName.size()+1];
+        String[] str = new String[allGroupName.size()-readyGroupName.size()];
         for (String gName :
                 allGroupName) {
             if(!readyGroupName.contains(gName)){

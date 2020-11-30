@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.henu.android.activity.R;
+import com.henu.android.R;
 import com.henu.android.entity.News;
 
 import java.util.ArrayList;
@@ -64,7 +64,6 @@ public class DGMessage extends Fragment {
                 messageAdapter = onSendMsg.getMessageAdapter();
                 listView.setAdapter(messageAdapter);
                 messageAdapter.notifyDataSetChanged();
-
                 edit.setText("");
                 listView.setSelection(myMessages.size());
             }

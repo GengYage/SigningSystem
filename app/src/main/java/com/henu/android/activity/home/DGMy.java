@@ -14,8 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 
-import com.henu.android.activity.R;
-import com.henu.android.entity.Group;
+import com.henu.android.R;
 import com.henu.android.entity.User;
 
 public class DGMy extends Fragment {

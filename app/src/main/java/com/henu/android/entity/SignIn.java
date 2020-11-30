@@ -3,9 +3,9 @@ package com.henu.android.entity;
 import java.util.Date;
 
 public class SignIn {
-    private int sid;
+    private int id;
     private int gid;
-    private int oid;
+    private int uid;
     private Date time;
     private Date deadLine;
     private double longitude;
@@ -15,12 +15,12 @@ public class SignIn {
     private double range;
     private int state;
 
-    public int getSid() {
-        return sid;
+    public int getId() {
+        return id;
     }
 
-    public void setSid(int sid) {
-        this.sid = sid;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getGid() {
@@ -31,12 +31,12 @@ public class SignIn {
         this.gid = gid;
     }
 
-    public int getOid() {
-        return oid;
+    public int getUid() {
+        return uid;
     }
 
-    public void setOid(int oid) {
-        this.oid = oid;
+    public void setUid(int uid) {
+        this.uid = uid;
     }
 
     public Date getTime() {
@@ -106,9 +106,9 @@ public class SignIn {
     @Override
     public String toString() {
         return "SignIn{" +
-                "sid=" + sid +
+                "id=" + id +
                 ", gid=" + gid +
-                ", oid=" + oid +
+                ", uid=" + uid +
                 ", time=" + time +
                 ", deadLine=" + deadLine +
                 ", longitude=" + longitude +

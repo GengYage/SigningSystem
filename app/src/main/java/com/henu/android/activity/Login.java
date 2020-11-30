@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.henu.android.R;
 import com.henu.android.activity.home.Home;
 import com.henu.android.entity.User;
 import com.henu.android.utils.BundleUtils;

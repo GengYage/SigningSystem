@@ -1,8 +1,15 @@
 package com.henu.android.activity.home;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,17 +20,21 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 
-import com.henu.android.activity.R;
+import com.henu.android.R;
 import com.henu.android.entity.Group;
 import com.henu.android.entity.News;
+import com.henu.android.entity.SignIn;
 import com.henu.android.entity.User;
 import com.henu.android.socket.Client;
 import com.henu.android.utils.BundleUtils;
 import com.henu.android.utils.GroupUtils;
 import com.henu.android.utils.JSONUtils;
 import com.henu.android.utils.MessageUtils;
+import com.henu.android.utils.SignUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -39,16 +50,39 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
     private Context context = this;
     private ArrayList<Fragment> frags = new ArrayList<>();
     public static Looper looper = Looper.myLooper();
-
     //进入的群id
     private Integer gid;
-
     //socket
     private Client mClient;
+
+    //location
+    public static Location locations = null;
+
+    //签到表id
+    int[] signId = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, //指定gps提供者
+                1000, //间隔时间
+                1,//位置间隔
+                new LocationListener() {
+                    @Override
+                    public void onLocationChanged(@NonNull Location location) {
+                    }
+                }
+        );
+
+        locations = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
         //获取用户信息
         Bundle userInfo = getIntent().getExtras();
         user = BundleUtils.getUserFromBundle(userInfo);
@@ -65,6 +99,20 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
         updateInfo();
     }
 
+    public void updateLocation(Location location) {
+        if(location != null) {
+            locations = location;
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("您的位置是:\n");
+            stringBuilder.append("经度:");
+            stringBuilder.append(location.getLongitude());
+            stringBuilder.append("\n纬度:");
+            stringBuilder.append(location.getLatitude());
+            Toast.makeText(context,stringBuilder.toString(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context,"没有gps信息", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     public Handler handler = new Handler(looper) {
         @Override
@@ -75,12 +123,13 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
             switch (what) {
                 case 0:
                     News news = JSONUtils.JsonToMessage(msg.obj.toString());
-                    if (news.getGroupID() == gid && news.getUserId()!=user.getId()) {
+                    if(news.getGroupID() == gid && news.getUserId()!=user.getId() && MessageAdapter.isInteger(news.getContent())) {
+                        System.out.println("ok?");
+                    } else if (news.getGroupID() == gid && news.getUserId()!=user.getId()) {
                         myMessages.add(news);
                         Message message = new Message();
                         message.what = 3;
                         DGMessage.handler.sendMessage(message);
-                        System.out.println("yes???");
                     } else if(news.getGroupID() != gid && news.getUserId()!=user.getId()){
                         Toast.makeText(context,"群id为"+news.getGroupID()+"的群有新消息",Toast.LENGTH_SHORT).show();
                     }
@@ -126,6 +175,33 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
                     dgMy = new DGMy();
                     addFragment(dgMy);
                     showFragment(dgMy);
+                    break;
+                case 13: //创建群聊
+                    getNextSignid();
+                case 14:
+                    if(msg.obj == null) {
+                        return;
+                    }
+                    System.out.println((Integer) msg.obj);
+                    createSign();
+                    News newMsg = new News();
+                    newMsg.setContent(String.valueOf((Integer) msg.obj));
+                    newMsg.setGroupID(gid);
+                    newMsg.setUsername(user.getUsername());
+                    newMsg.setUserId(user.getId());
+                    myMessages.add(newMsg);
+
+                    Message message = new Message();
+                    message.what = 3;
+                    DGMessage.handler.sendMessage(message);
+
+                    Message message1 = new Message();
+                    message1.what = 1;
+                    message1.obj = JSONUtils.messageToJson(newMsg);
+                    mClient.getClientOutputThread().sendHandler.sendMessage(message1);
+                    break;
+                case 15:
+                    Toast.makeText(context,"创建成功",Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -184,18 +260,92 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
 
     //聊天fragment
     @Override
-    public void sendMsg(String context) {
-        Message msg = new Message();
+    public void sendMsg(String content) {
         News news = new News();
-        news.setContent(context);
-        //设置用户id和群id
-        news.setGroupID(gid);
-        news.setUserId(user.getId());
-        news.setUsername(user.getUsername());
-        msg.obj = JSONUtils.messageToJson(news);
-        msg.what = 1;
+        Message msg = new Message();
+        //创建群指令
+        if("/create sign".equals(content)) {
+            Toast.makeText(context,"正在创建签到，请稍候",Toast.LENGTH_SHORT).show();
+            Message message = new Message();
+            message.what = 13;
+            news.setContent(content);
+            //设置用户id和群id
+            news.setGroupID(gid);
+            news.setUserId(user.getId());
+            news.setUsername(user.getUsername());
+            handler.sendMessage(message);
+
+            msg.obj = JSONUtils.messageToJson(news);
+            msg.what = 1;
+            myMessages.add(news);
+        } else if("".equals(content)) {
+            Toast.makeText(context,"消息不能为空",Toast.LENGTH_SHORT).show();
+        } else {
+            news.setContent(content);
+            //设置用户id和群id
+            news.setGroupID(gid);
+            news.setUserId(user.getId());
+            news.setUsername(user.getUsername());
+
+            msg.obj = JSONUtils.messageToJson(news);
+            msg.what = 1;
+            myMessages.add(news);
+        }
         mClient.getClientOutputThread().sendHandler.sendMessage(msg);
-        myMessages.add(news);
+    }
+
+    //判断一个数是否在数组
+    public boolean isNumber(int num, int[] arr) {
+        //没有签到表时
+        if(arr == null) {
+            return false;
+        }
+        boolean flag = false;
+        for (int i=0;i<arr.length;i++) {
+            if (num == arr[i]) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    public void getNextSignid() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int nextSignId = SignUtils.getNextSignId();
+                    Message message = new Message();
+                    message.what = 14;
+                    message.obj = nextSignId;
+                    handler.sendMessage(message);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //创建签到表
+    public void createSign() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    SignUtils.createSign(gid, user.getId(), Double.parseDouble(String.valueOf(locations.getLongitude())), Double.parseDouble(String.valueOf(locations.getLatitude())));
+                    Message message = new Message();
+                    message.what = 15;
+                    handler.sendMessage(message);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @Override

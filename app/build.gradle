@@ -26,6 +26,13 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    sourceSets{
+        main{
+            jniLibs.srcDir 'libs'
+            jni.srcDirs = []
+        }
+    }
 }
 // 添加插件
 apply plugin: "com.mob.sdk"
@@ -38,14 +45,14 @@ MobSDK {
 
     }
 }
-dependencies {
 
+dependencies {
+    implementation fileTree(dir:  'libs' , include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    // https://mvnrepository.com/artifact/com.alibaba/fastjson
-    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.75'
-    testImplementation 'junit:junit:4.+'
+    implementation group: 'com.alibaba', name: 'fastjson', version: '1.2.75'
+    //noinspection GradleDependency
     implementation  group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
