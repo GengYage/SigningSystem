@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class SignIn {
     private int id;
+    private int sid;
     private int gid;
     private int uid;
     private Date time;
@@ -21,6 +22,14 @@ public class SignIn {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getSid() {
+        return sid;
+    }
+
+    public void setSid(int sid) {
+        this.sid = sid;
     }
 
     public int getGid() {
@@ -107,6 +116,7 @@ public class SignIn {
     public String toString() {
         return "SignIn{" +
                 "id=" + id +
+                ", sid=" + sid +
                 ", gid=" + gid +
                 ", uid=" + uid +
                 ", time=" + time +

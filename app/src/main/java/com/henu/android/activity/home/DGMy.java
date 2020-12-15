@@ -17,6 +17,8 @@ import android.widget.Spinner;
 import com.henu.android.R;
 import com.henu.android.entity.User;
 
+import java.util.List;
+
 public class DGMy extends Fragment {
     public interface OnMyClick {
         ArrayAdapter<String> getArrayAdapt(); //获取未加入群adapter
@@ -25,6 +27,7 @@ public class DGMy extends Fragment {
         void addGroup(String gname); //添加群
         void addUser(String gname); //加群
         String[] getGroups();
+        SignInAdapter getSids();
     }
     private OnMyClick onMyClick;
     private Button createGroup = null; //创群按钮
@@ -35,6 +38,10 @@ public class DGMy extends Fragment {
     private ArrayAdapter<String> arrayAdapt = null; //未加入群适配器
     private GroupAdapter groupArrayAdapter = null; //已加入群适配器
     private ListView myGroup = null; //已加入群的view
+    private ListView signSids = null;
+
+    //用户加入的所有签到表
+    private SignInAdapter sids = null;
 
     @Override
     public void onAttach(Context context) {
@@ -92,6 +99,11 @@ public class DGMy extends Fragment {
         myGroup.setAdapter(groupArrayAdapter);
         groupArrayAdapter.notifyDataSetChanged();
 
+        //signsids
+        signSids = view.findViewById(R.id.my_notice);
+        sids = onMyClick.getSids();
+        signSids.setAdapter(sids);
+        sids.notifyDataSetChanged();
 
         return view;
     }

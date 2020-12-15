@@ -1,7 +1,8 @@
 package com.henu.android.activity.home;
 
 import android.content.Context;
-import android.location.Location;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,9 @@ import android.widget.Toast;
 
 import com.henu.android.R;
 import com.henu.android.entity.News;
+import com.henu.android.utils.SignUtils;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -21,12 +24,14 @@ public class MessageAdapter extends BaseAdapter {
     private Context context; //上下文
     private LayoutInflater inflater; //反射器
     private int id; //记录用户的id
+    private Handler handler;
     //构造器
-    public MessageAdapter (Context context, ArrayList<News> news, int id){
+    public MessageAdapter (Context context, ArrayList<News> news, int id, Handler handler){
         super();
         this.context = context;
         this.news = news;
         this.id = id;
+        this.handler = handler;
         this.inflater = LayoutInflater.from(context);
     }
     //返回是否是自己发送的消息
@@ -66,10 +71,26 @@ public class MessageAdapter extends BaseAdapter {
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append(Home.locations.getLatitude());
-                    stringBuilder.append(Home.locations.getLongitude());
-                    Toast.makeText(context,stringBuilder.toString() ,Toast.LENGTH_SHORT).show();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if(Home.locations == null) {
+                                    Toast.makeText(context, "尚未定位成功，请稍候",Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                int flag = SignUtils.signOneById(Integer.parseInt(btn.getText().toString()), id, Home.locations.getLatitude(), Home.locations.getLongitude());
+                                Message message = new Message();
+                                message.what = 16;
+                                message.obj = flag;
+                                handler.sendMessage(message);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            } catch (ClassNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 }
             });
             return msg;

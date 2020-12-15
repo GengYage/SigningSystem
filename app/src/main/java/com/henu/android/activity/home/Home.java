@@ -27,7 +27,6 @@ import androidx.core.app.ActivityCompat;
 import com.henu.android.R;
 import com.henu.android.entity.Group;
 import com.henu.android.entity.News;
-import com.henu.android.entity.SignIn;
 import com.henu.android.entity.User;
 import com.henu.android.socket.Client;
 import com.henu.android.utils.BundleUtils;
@@ -38,6 +37,8 @@ import com.henu.android.utils.SignUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClick {
 
@@ -50,6 +51,7 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
     private Context context = this;
     private ArrayList<Fragment> frags = new ArrayList<>();
     public static Looper looper = Looper.myLooper();
+    private List<Integer> sids = null;
     //进入的群id
     private Integer gid;
     //socket
@@ -106,7 +108,7 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
             stringBuilder.append("您的位置是:\n");
             stringBuilder.append("经度:");
             stringBuilder.append(location.getLongitude());
-            stringBuilder.append("\n纬度:");
+            stringBuilder.append("\n纬nti度:");
             stringBuilder.append(location.getLatitude());
             Toast.makeText(context,stringBuilder.toString(), Toast.LENGTH_SHORT).show();
         } else {
@@ -114,6 +116,7 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
         }
     }
 
+    //异步消息处理
     public Handler handler = new Handler(looper) {
         @Override
         public void handleMessage(android.os.Message msg) {
@@ -125,6 +128,10 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
                     News news = JSONUtils.JsonToMessage(msg.obj.toString());
                     if(news.getGroupID() == gid && news.getUserId()!=user.getId() && MessageAdapter.isInteger(news.getContent())) {
                         System.out.println("ok?");
+                        myMessages.add(news);
+                        Message message = new Message();
+                        message.what = 3;
+                        DGMessage.handler.sendMessage(message);
                     } else if (news.getGroupID() == gid && news.getUserId()!=user.getId()) {
                         myMessages.add(news);
                         Message message = new Message();
@@ -182,8 +189,7 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
                     if(msg.obj == null) {
                         return;
                     }
-                    System.out.println((Integer) msg.obj);
-                    createSign();
+                    createSign((Integer) msg.obj);
                     News newMsg = new News();
                     newMsg.setContent(String.valueOf((Integer) msg.obj));
                     newMsg.setGroupID(gid);
@@ -202,6 +208,15 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
                     break;
                 case 15:
                     Toast.makeText(context,"创建成功",Toast.LENGTH_SHORT).show();
+                    break;
+                case 16:
+                    if((Integer)msg.obj == 1) {
+                        Toast.makeText(context,"签到成功",Toast.LENGTH_SHORT).show();
+                    } else if((Integer)msg.obj == 0){
+                        Toast.makeText(context,"签到已经结束",Toast.LENGTH_SHORT).show();
+                    } else if((Integer)msg.obj == 2) {
+                        Toast.makeText(context,"未在签到范围内",Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 default:
                     break;
@@ -310,6 +325,7 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
         return flag;
     }
 
+    //查找下一个可用signIn id
     public void getNextSignid() {
         new Thread(new Runnable() {
             @Override
@@ -330,12 +346,12 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
     }
 
     //创建签到表
-    public void createSign() {
+    public void createSign(int sid) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    SignUtils.createSign(gid, user.getId(), Double.parseDouble(String.valueOf(locations.getLongitude())), Double.parseDouble(String.valueOf(locations.getLatitude())));
+                    SignUtils.createSign(sid, gid, user.getId(), Double.parseDouble(String.valueOf(locations.getLongitude())), Double.parseDouble(String.valueOf(locations.getLatitude())));
                     Message message = new Message();
                     message.what = 15;
                     handler.sendMessage(message);
@@ -348,9 +364,10 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
         }).start();
     }
 
+
     @Override
     public MessageAdapter getMessageAdapter() {
-        return new MessageAdapter(context, myMessages, user.getId());
+        return new MessageAdapter(context, myMessages, user.getId(),handler);
     }
 
     @Override
@@ -433,6 +450,12 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
         return groupUserNoExist;
     }
 
+    //获取用户加入的签到表的sid
+    @Override
+    public SignInAdapter getSids() {
+        return new SignInAdapter(context, user.getId(), sids,handler);
+    }
+
     public void updateInfo() {
         new Thread() {
             @Override
@@ -444,6 +467,8 @@ public class Home extends Activity implements DGMessage.OnSendMsg, DGMy.OnMyClic
                     groupUserNoExist = GroupUtils.getGroupName(user.getId());
                     //查找用户在的所有群
                     groupUserExist = GroupUtils.getGroups(user.getId());
+                    //查找用户参与的所有签到
+                    sids = SignUtils.getAllSidByUid(user.getId());
 
                     Message message = new Message();
                     message.what = 4;
